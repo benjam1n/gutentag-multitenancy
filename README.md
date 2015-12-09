@@ -1,10 +1,26 @@
 # Gutentag::Multitenancy
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/gutentag/multitenancy`. To experiment with that code, run `bin/console` for an interactive prompt.
+This gem extends [Gutentag](https://github.com/pat/gutentag) with multitenancy support.
 
-TODO: Delete this and the text above, and describe your gem
+Gutentag's tags are available to every user of your application; this gem scopes the tags by tenant.
+
 
 ## Installation
+
+If you haven't installed Gutentag yet, [install](https://github.com/pat/gutentag#installation) it now.  You'll need to modify your Gemfile to install the latest version from HEAD:
+
+```ruby
+gem 'gutentag', github: 'pat/gutentag', ref: '51bd8f2f37f21dc4ef84a87889db4f28aa3573e2'
+```
+
+Now run the following migration (TODO: make a generator for this!):
+
+```ruby
+add_column :gutentag_tags, :tenant_id, :integer, null: false
+
+remove_index :gutentag_tags, :name
+add_index :gutentag_tags, [:name, :tenant_id], unique: true
+```
 
 Add this line to your application's Gemfile:
 
@@ -20,22 +36,33 @@ Or install it yourself as:
 
     $ gem install gutentag-multitenancy
 
+
 ## Usage
 
-TODO: Write usage instructions here
+Define a `tenant_id` method in each model which can have tags.  In the following example each author has their own set of tags for articles:
 
-## Development
+```ruby
+class Article < ActiveRecord::Base
+  belongs_to :author
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+  has_many_tags  # from Gutentag
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+  def tenant_id
+    author.id
+  end
+end
+```
 
-## Contributing
+To retrieve all the tags for a tenant, use the `by_tenant_id` scope:
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/gutentag-multitenancy.
+```ruby
+Gutentag::Tag.by_tenant_id 42
+```
 
 
 ## License
+
+Copyright 2015 Andrew Stewart.
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
 
