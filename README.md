@@ -59,6 +59,11 @@ To retrieve all the tags for a tenant, use the `by_tenant_id` scope:
 Gutentag::Tag.by_tenant_id 42
 ```
 
+## TO DO
+
+- Generator for the migration.
+- Tests.
+
 
 ## License
 
