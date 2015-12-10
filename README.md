@@ -13,28 +13,18 @@ If you haven't installed Gutentag yet, [install](https://github.com/pat/gutentag
 gem 'gutentag', github: 'pat/gutentag', ref: '51bd8f2f37f21dc4ef84a87889db4f28aa3573e2'
 ```
 
-Now run the following migration (TODO: make a generator for this!):
-
-```ruby
-add_column :gutentag_tags, :tenant_id, :integer, null: false
-
-remove_index :gutentag_tags, :name
-add_index :gutentag_tags, [:name, :tenant_id], unique: true
-```
-
-Add this line to your application's Gemfile:
+Add `gutentag_multitenancy` to your Gemfile, and `bundle install`:
 
 ```ruby
 gem 'gutentag-multitenancy'
 ```
 
-And then execute:
+Now import and run the migration:
 
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install gutentag-multitenancy
+```
+rake gutentag_multitenancy:install:migrations
+rake db:migrate
+```
 
 
 ## Usage
@@ -59,9 +49,8 @@ To retrieve all the tags for a tenant, use the `by_tenant_id` scope:
 Gutentag::Tag.by_tenant_id 42
 ```
 
-## TO DO
+## To Do
 
-- Generator for the migration.
 - Tests.
 
 
