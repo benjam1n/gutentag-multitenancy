@@ -7,8 +7,9 @@ module Gutentag
       end
 
       module ClassMethods
-        def has_many_tags
-          super
+        def has_many_tenant_tags
+          # super
+          Gutentag::ActiveRecord.call(self)
           include InstanceMethodsOnActivation
         end
       end
